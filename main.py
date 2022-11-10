@@ -64,5 +64,9 @@ def safety(fp, ghs1, ghs2, ait, res, perox, eod):
     return score
 
 
+df2 = pd.DataFrame(data, columns=['H341/H351/H361', 'H340/H350/H360', 'H304/H371/H376', 'H334', 'H370/H372',
+                                  'H302/H312/H332/H336/EUH070', 'H301/H311/H331', 'H300/H310/H330',
+                                  'H315/H317/H319/H335/EUH066', 'H318', 'H314'])
+
 Safety_score = safety(Flash_Point, GHS_224_225, GHS_226, AIT, RES, PER, EOD)
 print(Safety_score)
