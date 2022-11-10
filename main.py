@@ -127,7 +127,56 @@ def health(cmr6, cmr9, stot2, stot4, stot6, act2, act6, act9, irr2, irr4, irr7):
     return max(score)
 
 
+df3 = pd.DataFrame(data, columns=['Boiling point', 'No H4xx after fully registered', 'H412/H413', 'H400,H410,H411',
+                                  'EUH420 (ozone)', 'No, or partial REACh  registration'])
+
+BP = df3.loc[0].at['Boiling point']
+GHS3 = df3.loc[0].at['No H4xx after fully registered']
+GHS5 = df3.loc[0].at['H412/H413']
+GHS7 = df3.loc[0].at['H400,H410,H411']
+OTH5 = df3.loc[0].at['No, or partial REACh  registration']
+OZO = df3.loc[0].at['EUH420 (ozone)']
+
+
+def environmental(bp, ghs3, ghs5, ghs7, oth5, ozo):
+    score = []
+
+    if bp < 50:
+        score.append("7")
+
+    if bp > 200:
+        score.append("7")
+
+    if 50 <= bp <= 69:
+        score.append("5")
+
+    if 140 <= bp <= 200:
+        score.append("5")
+
+    if 70 <= bp <= 139:
+        score.append("3")
+
+    if ghs3 == 1:
+        score.append("3")
+
+    if ghs5 == 1:
+        score.append("5")
+
+    if ghs7 == 1:
+        score.append("7")
+
+    if oth5 == 1:
+        score.append("5")
+
+    if ozo == 1:
+        score.append("10")
+
+    return max(score)
+
+
 Safety_score = safety(Flash_Point, GHS_224_225, GHS_226, AIT, RES, PER, EOD)
 Health_score = health(CMR6, CMR9, STOT2, STOT4, STOT6, AcT2, AcT6, AcT9, Irr2, Irr4, Irr7)
+Env_score = environmental(BP, GHS3, GHS5, GHS7, OTH5, OZO)
 print(Safety_score)
 print(Health_score)
+print(Env_score)
