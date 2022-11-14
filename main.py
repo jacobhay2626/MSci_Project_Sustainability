@@ -25,7 +25,7 @@ Chemical_name_index = Chemical_name[0]
 '''
 retrieve the values for the different properties of the solvent. 
 '''
-Flash_Point = df.iloc[Chemical_name_index].at['Flash Point']
+Flash_Point = df.loc[Chemical_name_index].at['Flash Point']
 GHS_224_225 = df.loc[Chemical_name_index].at['H224/H225']
 GHS_226 = df.loc[Chemical_name_index].at['H226']
 AIT = df.loc[Chemical_name_index].at['Autoignition Temperature']
@@ -85,10 +85,11 @@ def safety(fp, ghs1, ghs2, ait, res, perox, eod):
 
 
 df2 = pd.DataFrame(data,
-                   columns=['Solvent Name', 'H341/H351/H361', 'H340/H350/H360', 'H304/H371/H376', 'H334', 'H370/H372',
+                   columns=['Solvent Name', 'Boiling point', 'H341/H351/H361', 'H340/H350/H360', 'H304/H371/H376', 'H334', 'H370/H372',
                             'H302/H312/H332/H336/EUH070', 'H301/H311/H331', 'H300/H310/H330',
                             'H315/H317/H319/H335/EUH066', 'H318', 'H314'])
 
+BP = df2.loc[Chemical_name_index].at['Boiling point']
 CMR6 = df2.loc[Chemical_name_index].at['H341/H351/H361']
 CMR9 = df2.loc[Chemical_name_index].at['H340/H350/H360']
 STOT2 = df2.loc[Chemical_name_index].at['H304/H371/H376']
@@ -109,7 +110,7 @@ print the highest value within that array at the end?
 '''
 
 
-def health(cmr6, cmr9, stot2, stot4, stot6, act2, act6, act9, irr2, irr4, irr7):
+def health(bp, cmr6, cmr9, stot2, stot4, stot6, act2, act6, act9, irr2, irr4, irr7):
     score = []
 
     if cmr6 == 1:
@@ -145,7 +146,12 @@ def health(cmr6, cmr9, stot2, stot4, stot6, act2, act6, act9, irr2, irr4, irr7):
     if irr7 == 1:
         score.append("7")
 
-    return max(score)
+    h_score = int(max(score))
+
+    if bp < 85:
+        h_score += 1
+
+    return h_score
 
 
 df3 = pd.DataFrame(data, columns=['Solvent Name', 'Boiling point', 'No H4xx after fully registered', 'H412/H413',
@@ -197,7 +203,7 @@ def environmental(bp, ghs3, ghs5, ghs7, oth5, ozo):
 
 
 Safety_score = safety(Flash_Point, GHS_224_225, GHS_226, AIT, RES, PER, EOD)
-Health_score = health(CMR6, CMR9, STOT2, STOT4, STOT6, AcT2, AcT6, AcT9, Irr2, Irr4, Irr7)
+Health_score = health(BP, CMR6, CMR9, STOT2, STOT4, STOT6, AcT2, AcT6, AcT9, Irr2, Irr4, Irr7)
 Env_score = environmental(BP, GHS3, GHS5, GHS7, OTH5, OZO)
 print("Safety Score: " + str(Safety_score))
 print("Health Score: " + str(Health_score))
