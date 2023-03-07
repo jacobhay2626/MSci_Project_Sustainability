@@ -40,17 +40,55 @@ for x in columns:
 
 X_train, X_test, y_train, y_test = train_test_split(data_df_impute, y, random_state=0)
 
+# ---------------------------------------------------------------------------------------------
+# RANDOM FORREST METHOD
+
 # randomforrest = RandomForestClassifier()
 # randomforrest.fit(X_train, y_train)
 # predictions = randomforrest.predict(X_test)
 # print(predictions)
 # print(y_test)
-#
+
+# ---------------------------------------------------------------------------------------------
+
 # print("=== Confusion Matrix ===")
 # print(confusion_matrix(y_test, predictions))
 # print('\n')
 # print("=== Classification Report ===")
 # print(classification_report(y_test, predictions))
+
+# ---------------------------------------------------------------------------------------------
+
+# HOLDOUT CROSS VALIDATION:
+# x_train, x_test, y_train, y_test = train_test_split()
+
+# K FOLD METHOD
+# NUM_SPLITS = X
+# kfold = KFold(n_splits=NUM_SPLITS)
+# split_data = kfold.split(data)
+
+# LEAVE p OUT Method
+#  P_VAL = X
+# lpocv = LeavePOut(p=p_VAL)
+# split_lpocv.split(data)
+
+# LEAVE ONE OUT METHOD
+# loocv = LeaveOneOut()
+# split_loocv = loocv.split(data)
+
+# ---------------------------------------------------------------------------------------------
+
+# SVM METHOD
+#
+# from sklearn.svm import SVC
+# from sklearn.metrics import accuracy_score
+#
+# clf = SVC(kernel='linear')
+# clf.fit(x_train,y_train)
+# y_pred = clf.predict(x_test)
+# print(accuracy_score(y_test,y_pred))
+
+# ---------------------------------------------------------------------------------------------
 
 # Cross Validation (Leave one out) 2nd
 # Plot the graphs for descriptors (correlation) 1st
