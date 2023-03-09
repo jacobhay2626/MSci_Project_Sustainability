@@ -3,42 +3,66 @@ import pandas as pd
 import plotly.express as px
 from sklearn import preprocessing
 from sklearn import impute
+from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix, classification_report
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, KFold
 from sklearn.neighbors import KNeighborsClassifier
 
-data = pd.read_csv("Dataset.csv")
-data_descriptors = data.drop(columns=['CHEM21 Solvents'])
-data_descriptors = data_descriptors.drop(['Sustainability'], axis=1).values
-y = data['Sustainability'].values
 
-columns = list(data_descriptors)
+def classification(descriptors, ml_method, validation):
+    data = pd.read_csv("Dataset.csv")
+    data_descriptors = data[descriptors]
+    y = data['Sustainability']
 
-# All missing values were given the mean value for the column
-imp = impute.SimpleImputer(missing_values=np.nan, strategy='mean')
-# fit to data
-imp.fit(data_descriptors)
-# transform data
-data_df_impute = imp.transform(data_descriptors)
+    columns = list(data_descriptors)
 
-# scaling
+    # All missing values were given the mean value for the column
+    imp = impute.SimpleImputer(missing_values=np.nan, strategy='mean')
+    # fit to data
+    imp.fit(data_descriptors)
+    # transform data
+    data_df_impute = imp.transform(data_descriptors)
 
-scaler = preprocessing.StandardScaler().fit(data_df_impute)
-data_df_impute = scaler.transform(data_df_impute)
+    # scaling
 
-data_df_impute = pd.DataFrame(data_df_impute, columns=columns, )
+    scaler = preprocessing.StandardScaler().fit(data_df_impute)
+    data_df_impute = scaler.transform(data_df_impute)
 
-for x in columns:
-    for y in columns:
-        if x == y:
-            continue
-        if x != y:
-            fig = px.scatter(data_df_impute, x=x, y=y)
-            if y != x:
-                break
+    data_df_impute = pd.DataFrame(data_df_impute, columns=columns)
 
-X_train, X_test, y_train, y_test = train_test_split(data_df_impute, y, random_state=0)
+    # X_train, X_test, y_train, y_test = train_test_split(data_df_impute, y, test_size=0.2)
+    if ml_method == "RF":
+        model = RandomForestClassifier()
+    elif ml_method == "SVM":
+        model = SVC(kernel='linear')
+
+    if validation == 10:
+        k = 10
+    else:
+        k = len(y)
+
+    kf = KFold(n_splits=k, random_state=None, shuffle=False)
+
+    preds = []
+    real = []
+
+    for train_index, test_index in kf.split(data_df_impute):
+        X_train, X_test = data_df_impute.iloc[train_index, :], data_df_impute.iloc[test_index, :]
+        y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+        model.fit(X_train, y_train.values.ravel())
+        y_pred = model.predict(X_test)
+        preds.extend(y_pred)
+        real.extend(y_test)
+
+    print(preds)
+    print(real)
+    print("=== Confusion Matrix ===")
+    print(confusion_matrix(real, preds))
+    print('\n')
+    print("=== Classification Report ===")
+    print(classification_report(real, preds))
+    return preds, real, confusion_matrix(real, preds), classification_report(real, preds)
 
 # ---------------------------------------------------------------------------------------------
 # RANDOM FORREST METHOD
