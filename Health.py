@@ -3,12 +3,10 @@ import pandas as pd
 from sklearn import impute, svm
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split, KFold
-import matplotlib.pyplot as plt
 from sklearn.metrics import r2_score, mean_absolute_error
-from sklearn.linear_model import LinearRegression, SGDRegressor
+from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 import plotly.express as px
-
 
 
 def importance_method(importance, descriptors):
@@ -17,20 +15,20 @@ def importance_method(importance, descriptors):
     for i in range(len(descriptors)):
         imp[i].insert(0, descriptors[i])
     importance = pd.DataFrame(data=imp, columns=["Descriptor", "Mean", "SD"])
-    fig_x = px.bar(importance, x="Descriptor", y="Mean", error_y="SD", title="Safety Descriptors")
-    fig_x.update_layout(font=dict(family="Courier New, monospace", size=18))
+    fig_x = px.bar(importance, x="Descriptor", y="Mean", error_y="SD", title="Health Descriptors")
+    fig_x.update_layout(font=dict(family="Courier New, monospace", size=15))
     fig_x.show()
     return importance
 
 
-def Safety_score(descriptors, ml_method, validation):
-    data = pd.read_csv('Safety.csv')
+def Health_Score(descriptors, ml_method, validation):
+    data = pd.read_csv('Health.csv')
 
     data_descriptors = data[descriptors]
 
     columns = list(data_descriptors)
 
-    y = data['Safety_Score']
+    y = data['Health_Score']
 
     imp = impute.SimpleImputer(missing_values=np.nan, strategy='mean')
 
@@ -43,14 +41,12 @@ def Safety_score(descriptors, ml_method, validation):
 
     data_df_impute = pd.DataFrame(data_df_impute, columns=columns)
 
-
     if ml_method == "LR":
         model = LinearRegression()
     elif ml_method == "RF":
         model = RandomForestRegressor()
     elif ml_method == "SVR":
         model = svm.SVR()
-
 
     if validation == 10:
         k = 10
@@ -59,10 +55,9 @@ def Safety_score(descriptors, ml_method, validation):
 
     kf = KFold(n_splits=k, random_state=None, shuffle=True)
 
-    s_preds = []
-    s_real = []
+    h_preds = []
+    h_real = []
     importance = []
-
 
     for train_index, test_index in kf.split(data_df_impute):
         X_train, X_test = data_df_impute.iloc[train_index, :], data_df_impute.iloc[test_index, :]
@@ -76,23 +71,22 @@ def Safety_score(descriptors, ml_method, validation):
         elif ml_method == "RF":
             importance.append(model.feature_importances_)
         y_pred = model.predict(X_test)
-        s_preds.extend(y_pred)
-        s_real.extend(y_test)
+        h_preds.extend(y_pred)
+        h_real.extend(y_test)
 
-    # R2
-    s_preds = [int(i) for i in s_preds]
-    r_squared = r2_score(s_real, s_preds)
+    h_preds = [int(i) for i in h_preds]
+    r_squared = r2_score(h_real, h_preds)
     print(r_squared)
-    print(mean_absolute_error(s_real, s_preds))
-    print([int(i) for i in s_preds])
-    print(np.std(s_real))
+    print(mean_absolute_error(h_real, h_preds))
+    print([int(i) for i in h_preds])
+    print(np.std(h_real))
 
     if ml_method == "RF":
         importance_method(importance, descriptors)
-    return s_preds, s_real
+
+    return h_preds
 
 
-descriptors = ['FP', 'AIT', 'CGP', 'RES', 'CLP', 'PER']
-Safety_score(descriptors, "RF", 10)
-
+descriptors = ['INH', 'SDP', 'ING', 'XVP']
+Health_Score(descriptors, "RF", 10)
 

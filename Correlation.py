@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -5,7 +6,6 @@ import plotly.io as pio
 from sklearn import impute
 from sklearn import preprocessing
 from itertools import combinations
-import os
 
 data = pd.read_csv('Dataset.csv')
 data_descriptors = data.drop(columns=['CHEM21 Solvents', 'Sustainability'])
@@ -21,29 +21,16 @@ data_df_impute = scaler.transform(data_df_impute)
 data_df_impute = pd.DataFrame(data_df_impute, columns=columns)
 
 res = list(combinations(data_descriptors, 2))
-
 fig_list = []
 
 if not os.path.exists("Correlations"):
     os.mkdir("Correlations")
-
-
-# def file_path():
-# # Want pio.write_image(fig, "Correlations/figX.png")
-# # Need to add a new file path for each plot.
-#     for index in enumerate(fig_list):
-#         path = 'Correlations/fig' + str(index) + '.png'
-#     return path
-
 
 for i in res:
     x = i[0]
     y = i[1]
     fig = px.scatter(data_df_impute, x=i[0], y=i[1])
     fig_list.append(fig)
-    # pio.write_image(fig, file_path())
-
-
 
 pio.write_image(fig_list[0], "Correlations/fig0.png")
 pio.write_image(fig_list[1], "Correlations/fig1.png")
@@ -100,8 +87,3 @@ pio.write_image(fig_list[51], "Correlations/fig51.png")
 pio.write_image(fig_list[52], "Correlations/fig52.png")
 pio.write_image(fig_list[53], "Correlations/fig53.png")
 pio.write_image(fig_list[54], "Correlations/fig54.png")
-
-
-
-
-

@@ -6,38 +6,39 @@ from sklearn import impute
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix, classification_report
-from sklearn.model_selection import train_test_split, KFold
+from sklearn.model_selection import train_test_split, KFold, GridSearchCV, RandomizedSearchCV
 from sklearn.neighbors import KNeighborsClassifier
 from tabulate import tabulate
 import xlsxwriter
 
 
 def classification(descriptors, ml_method, validation):
-
     #  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     #  READ CSV FILE
     data = pd.read_csv("Dataset.csv")
-    d_data = pd.read_csv("Dataset.csv", usecols=['HTP(ingestion)log10', 'HTP(Inhalation)log10', 'XVP',
-                                                 'Boiling Point', 'Resistivitylog10',
-                                                 'Peroxide formation', 'AIT', 'CGPlog10', 'CLP',
-                                                 'Aquatic Toxicity (mg/L)log10'])
+    # d_data = pd.read_csv("Dataset.csv", usecols=['HTP(ingestion)log10', 'HTP(Inhalation)log10', 'XVP',
+    #                                              'Boiling Point', 'Resistivitylog10',
+    #                                              'Peroxide formation', 'AIT', 'CGPlog10', 'CLP',
+    #                                              'Aquatic Toxicity (mg/L)log10'])
 
     #  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     #  DEFINE DESCRIPTORS
     #  CREATED TWO: ONE INCLUDING THE SOLVENTS AND ONE WITHOUT
 
-    string_d_data = data[descriptors]
-    descriptors = ['HTP(ingestion)log10', 'HTP(Inhalation)log10', 'XVP',
-                   'Boiling Point', 'Resistivitylog10',
-                   'Peroxide formation', 'AIT', 'CGPlog10', 'CLP',
-                   'Aquatic Toxicity (mg/L)log10']
-    data_descriptors = d_data[descriptors]
+    data_descriptors = data[descriptors]
+    # descriptors = ['HTP(ingestion)log10', 'HTP(Inhalation)log10', 'XVP',
+    #                'Boiling Point', 'Resistivitylog10',
+    #                'Peroxide formation', 'AIT', 'CGPlog10', 'CLP',
+    #                'Aquatic Toxicity (mg/L)log10']
+    # data_descriptors = d_data[descriptors]
 
     y = data['Sustainability']
 
     columns = list(data_descriptors)
+
+    # columns_b = list(string_d_data)
 
     #  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -61,10 +62,14 @@ def classification(descriptors, ml_method, validation):
     #  ONE DATAFRAME FOR THE SOLVENT NAMES
 
     data_df_impute = pd.DataFrame(data_df_impute, columns=columns)
-    df = pd.DataFrame(string_d_data, columns=columns_b)
+    # df = pd.DataFrame(string_d_data, columns=columns_b)
 
-    solvents = df[["CHEM21 Solvents"]].values
-    X_solvents = solvents.astype('|S')
+    # solvents = df[["CHEM21 Solvents"]].values
+    # x_solvents = solvents.astype('|S')
+    # y_solvents = x_solvents.tolist()
+    # print(x_solvents)
+    # print(type(x_solvents))
+    # print(y_solvents)
 
     #  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -72,16 +77,16 @@ def classification(descriptors, ml_method, validation):
 
     # X_train, X_test, y_train, y_test = train_test_split(data_df_impute, y, test_size=0.2)
     if ml_method == "RF":
-        model = RandomForestClassifier()
+        model = RandomForestClassifier(max_depth=9)
     elif ml_method == "SVM":
-        model = SVC(kernel='linear')
+        model = SVC()
 
     if validation == 10:
         k = 10
     else:
         k = len(y)
 
-    kf = KFold(n_splits=k, random_state=None, shuffle=False)
+    kf = KFold(n_splits=k, random_state=None, shuffle=True)
 
     #  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -90,9 +95,12 @@ def classification(descriptors, ml_method, validation):
     preds = []
     real = []
 
+
     for train_index, test_index in kf.split(data_df_impute):
         X_train, X_test = data_df_impute.iloc[train_index, :], data_df_impute.iloc[test_index, :]
         y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+        X_train = X_train.drop(columns=["CHEM21 Solvents"])
+        X_test = X_test.drop(columns=["CHEM21 Solvents"])
         model.fit(X_train, y_train.values.ravel())
         y_pred = model.predict(X_test)
         preds.extend(y_pred)
@@ -102,24 +110,26 @@ def classification(descriptors, ml_method, validation):
 
     #  CONFUSION MATRIX, CLASSIFICATION REPORT
 
-    # table = [['                 Solvents             ', "Real", "Preds"], [X_solvents], [real], [preds]]
 
-    # print(preds)
-    # print(X_solvents)
-    # print(real)
     print("=== Confusion Matrix ===")
     print(confusion_matrix(real, preds))
     print('\n')
     print("=== Classification Report ===")
     print(classification_report(real, preds))
 
-    #  I want a table that shows the solvents, their given score and the score predicted by programme.
-    # Column 1: solvents
-    # Column 2: scores
-    # Column 3: predicted scores
-    # print(tabulate(table))
-    # print(type(X_solvents))
-    # print(tabulate(table, tablefmt='grid'))
+
+    # param_grid = {
+    #     'n_estimators': [25, 50, 100, 150],
+    #     'max_features': ['sqrt', 'log2', None],
+    #     'max_depth': [3, 6, 9]
+    # }
+    #
+    # random_search = GridSearchCV(RandomForestClassifier(),
+    #                              param_grid=param_grid)
+    #
+    # random_search.fit(X_train, y_train)
+    # print(random_search.best_estimator_)
+
 
     return preds, real, confusion_matrix(real, preds), classification_report(real, preds)
 
