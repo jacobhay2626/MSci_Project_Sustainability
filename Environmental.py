@@ -2,12 +2,11 @@ import numpy as np
 import pandas as pd
 from sklearn import impute, preprocessing
 from sklearn.metrics import r2_score, mean_absolute_error
-from sklearn.linear_model import LinearRegression, SGDRegressor
+from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 import plotly.express as px
 from sklearn.model_selection import KFold
 from sklearn import svm
-from tabulate import tabulate
 
 
 def importance_method(importance, descriptors):
@@ -48,8 +47,6 @@ def Environmental_Score(descriptors, ml_method, validation):
         model = RandomForestRegressor()
     elif ml_method == "SVR":
         model = svm.SVR()
-    # elif ml_method == "SGD":
-    #     model = SGDRegressor()
 
     if validation == 10:
         k = 10
@@ -60,25 +57,17 @@ def Environmental_Score(descriptors, ml_method, validation):
 
     e_preds = []
     e_real = []
-    name = []
-    # add back name
-    data_df_impute.insert(loc=0,
-                          column='CHEM21 Solvents',
-                          value=data["CHEM21 Solvents"])
-
     importance = []
 
     for train_index, test_index in kf.split(data_df_impute):
         X_train, X_test = data_df_impute.iloc[train_index, :], data_df_impute.iloc[test_index, :]
         y_train, y_test = y.iloc[train_index], y.iloc[test_index]
-        # name to list
-        name += X_test["CHEM21 Solvents"].tolist()
         X_train = X_train.drop(columns=["CHEM21 Solvents"])
         X_test = X_test.drop(columns=["CHEM21 Solvents"])
         model.fit(X_train, y_train.values.ravel())
         if ml_method == "LR":
-             print(model.coef_)
-             # print(model.intercept_)
+            print(model.coef_)
+            print(model.intercept_)
         elif ml_method == "RF":
             importance.append(model.feature_importances_)
         y_pred = model.predict(X_test)
@@ -92,9 +81,6 @@ def Environmental_Score(descriptors, ml_method, validation):
     print([int(i) for i in e_preds])
     print(np.std(e_real))
 
-    fig = px.scatter(data_df_impute, x=e_preds, y=e_real, trendline='ols')
-    # fig.show()
-    # importance_method(model.feature_importances_, descriptors, "Random Forest")
     if ml_method == "RF":
         importance_method(importance, descriptors)
     return e_preds

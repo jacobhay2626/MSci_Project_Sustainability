@@ -5,7 +5,6 @@ import pandas as pd
 from sklearn.ensemble import HistGradientBoostingRegressor
 
 
-
 def test_model(train, test, descriptors, target):
     preds = []
 

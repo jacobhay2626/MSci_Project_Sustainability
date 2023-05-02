@@ -2,13 +2,11 @@ import numpy as np
 import pandas as pd
 from sklearn import impute, svm
 from sklearn import preprocessing
-from sklearn.model_selection import train_test_split, KFold
-import matplotlib.pyplot as plt
+from sklearn.model_selection import KFold
 from sklearn.metrics import r2_score, mean_absolute_error
-from sklearn.linear_model import LinearRegression, SGDRegressor
+from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 import plotly.express as px
-
 
 
 def importance_method(importance, descriptors):
@@ -43,14 +41,12 @@ def Safety_score(descriptors, ml_method, validation):
 
     data_df_impute = pd.DataFrame(data_df_impute, columns=columns)
 
-
     if ml_method == "LR":
         model = LinearRegression()
     elif ml_method == "RF":
         model = RandomForestRegressor()
     elif ml_method == "SVR":
         model = svm.SVR()
-
 
     if validation == 10:
         k = 10
@@ -62,7 +58,6 @@ def Safety_score(descriptors, ml_method, validation):
     s_preds = []
     s_real = []
     importance = []
-
 
     for train_index, test_index in kf.split(data_df_impute):
         X_train, X_test = data_df_impute.iloc[train_index, :], data_df_impute.iloc[test_index, :]
@@ -94,5 +89,3 @@ def Safety_score(descriptors, ml_method, validation):
 
 descriptors = ['FP', 'AIT', 'CGP', 'RES', 'CLP', 'PER']
 Safety_score(descriptors, "RF", 10)
-
-

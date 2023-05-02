@@ -5,8 +5,6 @@ import pandas as pd
 from sklearn.ensemble import HistGradientBoostingClassifier
 
 
-
-
 def test_model(train, test, descriptors, target):
     X_train = train[descriptors]
     y_train = train[target]
@@ -33,5 +31,3 @@ descriptors = ["HTP(ingestion)log10", "HTP(Inhalation)log10", "XVP", "Flash Poin
                "Vapour Pressure (mmHg)", "OH radical RC (cm/molecule s)", "EC50 daphnia magna (mg/L)"]
 
 test_model(train_data, test_data, descriptors, "Sustainability")
-
-# sklearn.ensemble.HistGradientBoostingClassifier and Regressor
