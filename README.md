@@ -11,7 +11,7 @@
    ### - SHE
    ### - Classification
 
-# ------------------------------------------------------------
+# --------------------------------------------------------------
 ## 1. Introduction
 
 Four classification and 18 regression models were built using scikit-learn. 5 datasets
