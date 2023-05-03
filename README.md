@@ -1,7 +1,8 @@
-#  GREEN CHEMISTRY: PREDICTING SOLVENT 'GREENNESS' USING ML METHODS 
+# Predicting solvent sustainability with machine learning
 
 # CONTENTS: 
 ## 1. Introduction
+## 2. Downloads
 ## 2. Correlations
 ## 3. Training
    ### - Classification models 
@@ -10,7 +11,7 @@
    ### - SHE
    ### - Classification
 
-# -------------------------------------------------------------------------
+# ------------------------------------------------------------
 ## 1. Introduction
 
 Four classification and 18 regression models were built using scikit-learn. 5 datasets
@@ -21,26 +22,50 @@ The safety model uses 6 descriptors, health uses 4 and environmental uses 5.
 Descriptors were plotted against each other to identify any correlations. 
 A final dataset (NewDataset.csv) was developed to test the developed models on. 
 
-## -----------------------------------------------------------------------------------------
 
-## 2. Correlations
+## 2. Downloads
+
+##### Install pandas:
+
+    pip install pandas
+
+##### Install numpy: 
+
+    pip install numpy
+
+##### Install sklearn: 
+
+    pip install -U scikit-learn
+
+##### Install plotly
+
+    pip install plotly==5.14.1 (or latest version)
+
+
+## 3. Correlations
+
 
 Import dataset then drop the name and dependent variable columns. 
+
 Define a variable with all the other columns in the dataset. 
+
 Creating a function to impute the mean and fit to the descriptors. 
+
 Scale and transform the data then create a dataframe. 
+
 Define a variable for all possible combinations of descriptors to plot against each other.
+
 Create a list of figures then write each image with a specific file directory for each combination.
 
-## -----------------------------------------------------------------------------------------
 
-## 3. Training
+
+## 4. Training
 
 ### Classification:
 
 #### FILES: classification.py, ML.py
 
-##### 1. classification.py
+##### a. classification.py
 
 ###### Parameters: Descriptors used in the dataset, machine learning method, and cross-validation method. 
 
@@ -74,20 +99,21 @@ Import the complete dataset as a csv file.
 certain parameters in the method, the values depend on the method/hyperparameter. 
 After just set up a grid search cross validation and fit your model to it.
 
-##### 2. ML.py
+##### b. ML.py
 
  Import the classification file and classification function. 
 
-Define the descriptors you wish to use in the classification model. The names must be identical to those
-used in the dataset. 
+Define the descriptors you wish to use in the classification model. 
+
+The names must be identical to those used in the dataset. 
 
 Define the variables you want to get and call the classification function. 
 
------------------------------------------------------------------------------------------------
+
 
 ### Regression:
-#### FILES: Safety.py, Health.py, Environmental.py
 
+#### FILES: Safety.py, Health.py, Environmental.py
 
 ##### a. Importance_method function (all three files):
 
@@ -101,27 +127,38 @@ Error bars are the standard deviation for the dataset.
 ###### Parameters: Descriptors used in the model, machine learning method, cross-validation method
 
 Import the safety dataset with the descriptors you have chosen for the model.
+
 Create a variable to define those descriptors. 
+
 Set y to be the dependent variable. 
+
 Create a function to impute the mean for missing values. 
+
 Fit that impute function to the descriptors variable. 
+
 Scale and transform the data then create a dataframe. 
 
 Define the methods and cross validation splits you want to use. 
+
 Create lists for the predictions, real scores and feature importance. 
+
 Define the training and testing sets. 
+
 For analysis of multiple linear regression the coefficients and intercepts can be taken.
+
 For random forest, easiest to add the feature importance for that model to the list and print that list. 
 
 Round the predictions to the nearest whole number.
+
 Retrieve r squared and mean absolute error values. 
+
 Call the importance_method function if using random forest. 
 
 Define the descriptors you want to use and call the function. 
 
-## -----------------------------------------------------------------------------------------
 
-## 4. Testing
+
+## 5. Testing
 
 #### FILES: Safety_score.py, Health_score.py, Environmental_score.py, TestDataset.py, Combination.py
 #### DATASETS: Safety_New_Dataset.csv, Health_New_Dataset.csv, Environmental_New_Dataset.csv, NewDataset.csv
@@ -133,10 +170,15 @@ The same descriptors were used in the new datasets as the original datasets.
 ###### Parameters: training dataset, test dataset, descriptors, and dependent variable. 
 
 Define the X train/test and Y train/test splits. 
+
 Function for imputing the mean for missing values. 
+
 Fit the X train data to this impute function. 
+
 Scale and transform the X train data. 
+
 Define the model and fit it to the X train and y train.
+
 Print a list of the predictions made rounded to the nearest whole number. 
 
 Define the training data as the original dataset.
@@ -147,7 +189,6 @@ Define the descriptors.
 
 Call the function.
 
----------------------------------------------------------------------------------------------
 
 
 
