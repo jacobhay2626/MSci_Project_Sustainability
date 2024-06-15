@@ -2,12 +2,10 @@ import numpy as np
 from sklearn import impute
 from sklearn import preprocessing
 import pandas as pd
-from sklearn.ensemble import HistGradientBoostingRegressor
+from sklearn.ensemble import HistGradientBoostingClassifier
 
 
 def test_model(train, test, descriptors, target):
-    preds = []
-
     X_train = train[descriptors]
     y_train = train[target]
     X_test = test[descriptors]
@@ -19,17 +17,17 @@ def test_model(train, test, descriptors, target):
     scaler = preprocessing.StandardScaler().fit(X_train)
     X_train = scaler.transform(X_train)
 
-    model = HistGradientBoostingRegressor()
+    model = HistGradientBoostingClassifier()
     model.fit(X_train, y_train.values.ravel())
     predictions = model.predict(X_test)
-    preds.extend(predictions)
 
     print(predictions)
-    preds = [int(i) for i in preds]
-    print([int(i) for i in preds])
 
 
-train_data = pd.read_csv("Health.csv")
-test_data = pd.read_csv("Health_New_Dataset.csv")
-descriptors = ["HTP(ingestion)log10", "HTP(Inhalation)log10", 'XVP', "SDP (mg)"]
-test_model(train_data, test_data, descriptors, "Health_Score")
+train_data = pd.read_csv("../Datasets/Dataset.csv")
+test_data = pd.read_csv("../Datasets/NewDataset.csv")
+descriptors = ["HTP(ingestion)log10", "HTP(Inhalation)log10", "XVP", "Flash Point",
+               "Peroxide formation", "AIT", "CGPlog10", "CLP", "Aquatic Toxicity (mg/L)log10",
+               "Vapour Pressure (mmHg)", "OH radical RC (cm/molecule s)", "EC50 daphnia magna (mg/L)"]
+
+test_model(train_data, test_data, descriptors, "Sustainability")

@@ -8,19 +8,15 @@ from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.model_selection import KFold, GridSearchCV
 
 
-
 def classification(descriptors, ml_method, validation):
-    #  ////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
     #  READ CSV FILE
-    data = pd.read_csv("Dataset.csv")
-
-    #  ////////////////////////////////////////////////////////////////////////////////////////////////////
+    data = pd.read_csv("../../Datasets/Dataset.csv")
 
     #  DEFINE DESCRIPTORS
     data_descriptors = data[descriptors]
 
+    # Prediction column
     y = data['Sustainability']
 
     columns = list(data_descriptors)
@@ -51,13 +47,14 @@ def classification(descriptors, ml_method, validation):
 
     #  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    #  METHOD, VALIDATION METHOD
+    #  METHOD
 
     if ml_method == "RF":
         model = RandomForestClassifier(max_depth=9)
     elif ml_method == "SVM":
         model = SVC()
 
+    # CROSS VALIDATION TRAIN:TEST SPLITS
     if validation == 10:
         k = 10
     else:
@@ -69,9 +66,11 @@ def classification(descriptors, ml_method, validation):
 
     #  MODEL
 
+    # EMPTY ARRAYS FOR PREDICTIONS AND REAL VALUES
     preds = []
     real = []
 
+    # TEST AND TRAINING DATA
     for train_index, test_index in kf.split(data_df_impute):
         X_train, X_test = data_df_impute.iloc[train_index, :], data_df_impute.iloc[test_index, :]
         y_train, y_test = y.iloc[train_index], y.iloc[test_index]
